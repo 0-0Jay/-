@@ -1,0 +1,17 @@
+# 엘리스 코드 챌린지 2번 - 정리 정돈을 좋아하는 k씨
+# 배열 슬라이싱 - 정렬 - 인덱싱
+
+import sys
+input = sys.stdin.readline
+
+n, m = map(int, input().split())
+arr = list(map(int, input().split()))
+for _ in range(m):
+    i, j, k = map(int, input().split())
+    print(sorted(arr[i - 1:j])[k - 1])
+
+# 알고리즘 : 단순 구현
+'''
+풀이 : 범위를 받아서 슬라이싱 한 후, 정렬하고 해당하는 인덱스를 출력한다.
+단순 구현문제다. 시키는데로 하면 된다.
+'''
