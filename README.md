@@ -8,3 +8,4 @@
 4. GameOnTree -> 100
 5. SequenceRecovery -> 100
 6. RedLineBlueLine -> 76
+7. EditDashboard -> 100
