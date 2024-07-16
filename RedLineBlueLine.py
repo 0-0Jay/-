@@ -49,4 +49,31 @@ print(min_red)
 첫 줄에 적혀 있든 파란 간선의 경우는 가장 큰 두 그룹을 찾아 한 그룹으로 만들고, 빨간 간선의 경우는 가장 작은 그룹끼리 합치려고 했다.
 그러나 때로는 가장 작은 그룹이 아닌, 그룹과 연결했을 때 최종적으로 빨간 간선이 더 적어지는 경우가 있다.
 이 경우를 정확하게 예외처리하지 못했다.
+
+<<< 아래는 공개된 정답 코드 >>>
+n = int(input())
+c = list(map(int,input().split()))
+
+dp = dict()
+dp[tuple([1] * n)] = 0
+queue = [tuple([1] * n)]
+queueIndex = 0
+while len(queue) > queueIndex:
+    v = queue[queueIndex]
+    queueIndex += 1
+    for i in range(len(v)):
+        for j in range(i + 1, len(v)):
+            u = []
+            for k in range(len(v)):
+                if k == j:
+                    u[i] += v[k]
+                else:
+                    u.append(v[k])
+            u = tuple(sorted(u))
+            if u not in dp:
+                dp[u] = dp[v] + v[i] * v[j] * (1 - c[n - len(v)])
+                queue.append(u)
+            else:
+                dp[u] = min(dp[u], dp[v] + v[i] * v[j] * (1 - c[n - len(v)]))
+print(dp[(n,)])
 '''
