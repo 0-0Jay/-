@@ -9,3 +9,4 @@
 5. SequenceRecovery -> 100
 6. RedLineBlueLine -> 76
 7. EditDashboard -> 100
+8. Advent -> 50
