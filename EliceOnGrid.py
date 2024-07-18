@@ -1,63 +1,81 @@
 # 엘리스 코드 챌린지 9번 - 격자 위의 ELICE
 # ELICE를 순서대로 먹는 최단 경로 찾기
 
-from collections import defaultdict
+from collections import deque
 import heapq as hq
+import sys
+input = sys.stdin.readline
+
+n = int(input())
+dt = [(0, 1), (1, 0)]
+miro = [[0 for _ in range(n + 1)] for _ in range(n + 1)]
+for i in range(1, n + 1):
+    tmp = tuple(map(int, input().split()))
+    for j in range(1, n + 1):
+        miro[i][j] = tmp[j - 1]
+    
+graph = [[] for _ in range(n * n + 1)]
+que = deque([(1, 1)])
+chk = set()
+while que:
+    x, y = que.popleft()
+    node = (x - 1) * n + y
+    if (x, y) in chk: continue
+    chk.add((x, y))
+    for dx, dy in dt:
+        nx = x + dx
+        ny = y + dy
+        if 1 <= nx <= n and 1 <= ny <= n:
+            next_node = (nx - 1) * n + ny
+            val = miro[x][y] + miro[nx][ny]
+            graph[node].append((next_node, val))
+            graph[next_node].append((node, val))
+            que.append((nx, ny))
+
+route = [[1]]
+for i in "ELICE":
+    a, b = map(int, input().split())
+    node = (a - 1) * n + b
+    route[0].append(node)
+route2 = route[0][:]
+route2[1], route2[-1] = route2[-1], route2[1]
+route.append(route2)
 
 def dijkstra(start, end):
     global graph, n, elice
-    cost = [1e12] * (n * n)
+    cost = [1e12] * (n * n + 1)
     heap = [(0, start)]
     cost[start] = 0
 
     while heap:
-        c, node = hq.heappop(heap)
-        if cost[node] < c: continue
-        for tnode, tc in graph[node]:
-            if cost[tnode] <= cost[node] + tc: continue
-            cost[tnode] = cost[node] + tc
-            hq.heappush(heap, (cost[tnode], tnode))
+        co, now = hq.heappop(heap)
+        if cost[now] < co: continue
+        for nx, nco in graph[now]:
+            if cost[nx] <= cost[now] + nco: continue
+            cost[nx] = cost[now] + nco
+            hq.heappush(heap, (cost[now], nx))
     return cost[end]
 
+min_cnt = 1e12
+for i in range(2):
+    cnt = 0
+    for j in range(1, 6):
+        cnt += dijkstra(route[i][j - 1], route[i][j])
+    min_cnt = min(cnt, min_cnt)
 
-n = int(input())
-g = [tuple(map(int, input().split())) for _ in range(n)]
-graph = defaultdict(list)
-dire = ((-1, 0), (1, 0), (0, -1), (0, 1))
-
-e = "ELICE"
-elice = [0]
-for i in e:
-    a, b = map(int, input().split())
-    elice.append((a - 1) * n + (b - 1))
-temp = elice[:]
-temp[1], temp[-1] = temp[-1], temp[1]
-arr = []
-
-
-for i in range(n):
-    for j in range(n):
-        for a, b in dire:
-            tx, ty = i + a, j + b
-            if not (0 <= tx < n and 0 <= ty < n): continue
-            arr.append((i * n + j, tx * n + ty, g[i][j] + g[tx][ty]))
-for st, ed, c in arr:
-    graph[st].append((ed, c))
-a1, a2 = 0, 0
-for i in range(1, len(elice)):
-    a1 += dijkstra(elice[i - 1], elice[i])
-for i in range(1, len(elice)):
-    a2 += dijkstra(temp[i - 1], temp[i])
-print(min(a1, a2))
-
-
+print(min_cnt)
+        
 # 알고리즘 : 다익스트라
 '''
-풀이 : 'ELICE'를 순서대로 먹어 완성할 수 있는 경우의 수는 2개이므로, 플로이드 워셜로 모든 정점에서 다른 모든 정점까지의 최단거리를 구해두고 탐색한다.
-처음 입력되는 5개의 좌표 중, 첫 번째 E와 마지막 E는 같은 글자이기 때문에 첫 번째 E를 가장 먼저 먹는 경우와 마지막 E를 가장 먼저 먹는 경우만 계산하면 된다.
-먼저 주어지는 각 정점 별 점수와 BFS를 활용하여 정점간 간선(가중치) 정보로 가공한다.
-이 때, (x, y) 좌표로 이루어진 2차원 정점 정보를 1차원 정보로 바꾸어 저장한다.
-이 후, 플로이드 워셜을 통해 한 정점에서 다른 정점을 가는 최소값을 모두 구해둔다.
-첫 줄에 적은 2가지 경우별 총 가중치 합을 최소값 비교하여 더 작은 값을 출력한다.
-다익스트라로도 풀어보고, 플로이드 워셜로도 풀어봤으나 둘다 모두 58점으로 통과하지 
+풀이 : 'ELICE'를 순서대로 먹어 완성할 수 있는 경우의 수는 2개이므로, 두 E에서 부터 다익스트라로 탐색한다.
+맨처음 주어지는 격자의 각 지점에 대한 정보를 받고, 이를 정점간 간선 정보로 가공햐여 인접리스트로 만든다.(graph)
+이 때, BFS를 응용하여 1,1에서 n,n까지 우측과 아래로만 퍼져나가게 하면서 양방향 간선을 모두 graph에 입력한다.
+노드는 좌표로 계산하면 복잡하기 때문에 (x,y)로 이루어진 각 정점은 (x - 1) * n + y 공식으로 정점 번호로 바꾸어 저장한다.
+
+다음으로 ELICE의 각 글자를 입력받는다.
+입력받을 때, 그 좌표를 마찬가지로 (x - 1) * n + y 공식으로 정점번호로 바꾼뒤, 순서대로 route[0]에 저장한다.
+이 route[0]에서 첫 E와 마지막 E의 좌표만 교환한 경로(route2)를 route[1]에 저장한다.
+
+마지막으로 route의 0번에 저장된 루트와 1번에 저장된 루트 각각을 정점간 다익스트라로 최단 거리를 찾는다.
+즉, 각 루트 별로 (E -> L)의 최단거리 + (L -> I)의 최단거리 ... (C -> E)의 최단거리를 계산하여 둘중 최소값을 출력한다.
 '''
