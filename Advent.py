@@ -50,5 +50,32 @@ need가 양수라면, 신도가 t명보다 작고, 친구가 얼마든지 들어
 마지막까지 이렇게 계산하여 가장 길게 유지한 정보(max(run))에서 편의를 위해 time 배열의 마지막에 추가했던 1e9에 대한 1을 빼준다.
 
 << 정답 코드 >>
-
+input = __import__("sys").stdin.readline
+n, m, l, t = map(int, input().split())
+a = [0] * n
+for _ in range(m):
+    i, j = map(int, input().split())
+    for k in range(i - 1, j - 1):
+        a[k] += 1
+d = [0] * -~l
+c = [0] * -~t
+for i in range(n):
+    if a[i] >= t:
+        while len(c) > 1 and not c[-1]:
+            c.pop()
+        for i in range(len(c) - 1):
+            c[i + 1] += c[i]
+        d = [
+            max(d[i - j] + c[j] for j in range(min(i + 1, len(c)))) + 1
+            for i in range(l + 1)
+        ]
+        c = [0] * -~t
+    else:
+        c[t - a[i]] += 1
+while len(c) > 1 and not c[-1]:
+    c.pop()
+for i in range(len(c) - 1):
+    c[i + 1] += c[i]
+d = [max(d[i - j] + c[j] for j in range(min(i + 1, len(c)))) for i in range(l + 1)]
+print(d[-1])
 '''
