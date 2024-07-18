@@ -10,4 +10,4 @@
 6. RedLineBlueLine -> 76
 7. EditDashboard -> 100
 8. Advent -> 50
-9. EliceOnGrid -> 58
+9. EliceOnGrid -> 100
