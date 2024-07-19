@@ -11,3 +11,4 @@
 7. EditDashboard -> 100
 8. Advent -> 50
 9. EliceOnGrid -> 100
+10. StairCard -> 50
