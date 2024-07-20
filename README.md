@@ -12,3 +12,5 @@
 8. Advent -> 50
 9. EliceOnGrid -> 100
 10. StairCard -> 50
+
+최종 결과 : 139위 / 2050명
