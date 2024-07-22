@@ -16,4 +16,5 @@
 총점 : 876점<br>
 최종 결과 : 139위 / 2050명
 
-![image](https://github.com/user-attachments/assets/87a4a2b9-751c-4ac7-9f28-d3eab9ba723a)
+![image](https://github.com/user-attachments/assets/5393d845-1c57-4ded-aa3b-4fe0dd58c355)
+
